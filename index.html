@@ -1,291 +1,1263 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>LibConnect</title>
-  
-  <!-- Tailwind CSS -->
-  <script src="https://cdn.tailwindcss.com"></script>
-  
-  <!-- Lucide Icons -->
-  <script src="https://unpkg.com/lucide@latest"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LibConnect — Connect, Learn, Grow</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0C0F14;
+    --bg2: #111620;
+    --card: #171D2A;
+    --card-hover: #1E2538;
+    --border: #252D42;
+    --text: #E4E8F1;
+    --muted: #6B7A99;
+    --primary: #00E5A0;
+    --primary-dim: #00B880;
+    --accent: #FF7043;
+    --accent-dim: #E55A30;
+    --danger: #FF4757;
+    --warning: #FFBE0B;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    overflow-x: hidden;
+  }
+  h1,h2,h3,h4,h5 { font-family: 'Space Grotesk', sans-serif; }
 
-  <style>
-    :root {
-      --primary: #328E6E;
-      --secondary: #67AE6E;
-      --accent: #90C67C;
-      --light: #E1EEBC;
-    }
+  /* Scrollbar */
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--muted); }
 
-    /* Hide scrollbar */
-    .hide-scrollbar::-webkit-scrollbar { display: none; }
-    .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-    
-    /* 3D Floating Animations */
-    @keyframes float {
-      0%, 100% { transform: translateY(0px) rotate(0deg); }
-      50% { transform: translateY(-20px) rotate(2deg); }
-    }
+  /* Background pattern */
+  body::before {
+    content: '';
+    position: fixed; inset: 0; z-index: -1;
+    background:
+      radial-gradient(ellipse 80% 50% at 20% 0%, rgba(0,229,160,0.06), transparent),
+      radial-gradient(ellipse 60% 40% at 80% 100%, rgba(255,112,67,0.04), transparent),
+      repeating-linear-gradient(0deg, transparent, transparent 59px, rgba(255,255,255,0.015) 59px, rgba(255,255,255,0.015) 60px),
+      repeating-linear-gradient(90deg, transparent, transparent 59px, rgba(255,255,255,0.015) 59px, rgba(255,255,255,0.015) 60px);
+  }
 
-    @keyframes pulse-slow {
-      0%, 100% { transform: scale(1); opacity: 0.3; }
-      50% { transform: scale(1.1); opacity: 0.5; }
-    }
+  /* Sidebar */
+  .sidebar {
+    position: fixed; left: 0; top: 0; bottom: 0; width: 260px;
+    background: var(--bg2); border-right: 1px solid var(--border);
+    display: flex; flex-direction: column; z-index: 50;
+    transition: transform 0.3s;
+  }
+  .nav-item {
+    display: flex; align-items: center; gap: 14px;
+    padding: 12px 20px; margin: 2px 12px; border-radius: 10px;
+    cursor: pointer; transition: all 0.2s; color: var(--muted);
+    font-weight: 500; font-size: 15px; position: relative;
+  }
+  .nav-item:hover { background: rgba(0,229,160,0.06); color: var(--text); }
+  .nav-item.active {
+    background: rgba(0,229,160,0.1); color: var(--primary);
+  }
+  .nav-item.active::before {
+    content: ''; position: absolute; left: 0; top: 50%; transform: translateY(-50%);
+    width: 3px; height: 24px; background: var(--primary); border-radius: 0 3px 3px 0;
+  }
+  .nav-item i { width: 22px; text-align: center; font-size: 17px; }
 
-    .float-element { animation: float 6s ease-in-out infinite; }
-    .pulse-element { animation: pulse-slow 8s ease-in-out infinite; }
+  /* Main */
+  .main-content { margin-left: 260px; margin-right: 320px; min-height: 100vh; padding: 24px 28px; }
+  .right-sidebar {
+    position: fixed; right: 0; top: 0; bottom: 0; width: 320px;
+    background: var(--bg2); border-left: 1px solid var(--border);
+    overflow-y: auto; padding: 24px 20px; z-index: 40;
+  }
 
-    /* Glassmorphism */
-    .glass-card {
-      background: rgba(255, 255, 255, 0.4);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-      border: 1px solid rgba(255, 255, 255, 0.3);
-      box-shadow: 0 8px 32px 0 rgba(50, 142, 110, 0.15);
-    }
+  /* Cards */
+  .card {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 14px; padding: 20px; transition: all 0.25s;
+  }
+  .card:hover { border-color: rgba(0,229,160,0.2); }
 
-    /* Transition for dot active state */
-    .dot-active {
-      width: 2rem !important;
-      background-color: var(--primary) !important;
-      opacity: 1 !important;
-    }
+  /* Buttons */
+  .btn-primary {
+    background: var(--primary); color: #0C0F14; font-weight: 600;
+    padding: 10px 22px; border-radius: 10px; border: none; cursor: pointer;
+    font-size: 14px; transition: all 0.2s; font-family: 'DM Sans';
+  }
+  .btn-primary:hover { background: var(--primary-dim); transform: translateY(-1px); box-shadow: 0 4px 20px rgba(0,229,160,0.25); }
+  .btn-outline {
+    background: transparent; color: var(--primary); border: 1.5px solid var(--primary);
+    padding: 8px 18px; border-radius: 10px; cursor: pointer;
+    font-size: 13px; font-weight: 600; transition: all 0.2s; font-family: 'DM Sans';
+  }
+  .btn-outline:hover { background: rgba(0,229,160,0.1); }
+  .btn-ghost {
+    background: transparent; color: var(--muted); border: none; cursor: pointer;
+    padding: 8px 14px; border-radius: 8px; transition: all 0.2s; font-family: 'DM Sans'; font-size: 14px;
+  }
+  .btn-ghost:hover { background: rgba(255,255,255,0.05); color: var(--text); }
+  .btn-accent {
+    background: var(--accent); color: white; font-weight: 600;
+    padding: 8px 18px; border-radius: 10px; border: none; cursor: pointer;
+    font-size: 13px; transition: all 0.2s; font-family: 'DM Sans';
+  }
+  .btn-accent:hover { background: var(--accent-dim); transform: translateY(-1px); }
 
-    /* 3D Button Effect */
-    .btn-3d {
-      transition: all 0.2s ease;
-      box-shadow: 0 4px 0 #256b52;
-    }
-    .btn-3d:active {
-      transform: translateY(3px);
-      box-shadow: 0 1px 0 #256b52;
-    }
+  /* Inputs */
+  .input-field {
+    background: var(--bg); border: 1.5px solid var(--border); color: var(--text);
+    padding: 10px 16px; border-radius: 10px; font-size: 14px; width: 100%;
+    transition: border-color 0.2s; outline: none; font-family: 'DM Sans';
+  }
+  .input-field:focus { border-color: var(--primary); }
+  .input-field::placeholder { color: var(--muted); }
+  textarea.input-field { resize: vertical; min-height: 80px; }
+  select.input-field { cursor: pointer; appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%236B7A99' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat; background-position: right 14px center;
+  }
 
-    /* Image wrapper for 3D depth */
-    .img-perspective {
-      perspective: 1000px;
-    }
-    .img-tilt {
-      transform: rotateY(-10deg) rotateX(5deg);
-      transition: transform 0.5s ease;
-    }
+  /* Tags / Chips */
+  .chip {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 5px 14px; border-radius: 20px; font-size: 12px; font-weight: 600;
+    cursor: pointer; transition: all 0.2s; border: 1.5px solid var(--border);
+    color: var(--muted); background: transparent;
+  }
+  .chip:hover { border-color: var(--primary); color: var(--primary); }
+  .chip.active { background: rgba(0,229,160,0.12); border-color: var(--primary); color: var(--primary); }
 
-    .lucide {
-      width: 100%;
-      height: 100%;
-    }
-  </style>
+  /* Avatar */
+  .avatar {
+    width: 44px; height: 44px; border-radius: 50%; object-fit: cover;
+    border: 2px solid var(--border); flex-shrink: 0;
+  }
+  .avatar-sm { width: 34px; height: 34px; }
+  .avatar-lg { width: 64px; height: 64px; }
+  .avatar-xl { width: 90px; height: 90px; }
+
+  /* Modal overlay */
+  .modal-overlay {
+    position: fixed; inset: 0; background: rgba(0,0,0,0.7);
+    backdrop-filter: blur(8px); z-index: 100;
+    display: flex; align-items: center; justify-content: center;
+    opacity: 0; pointer-events: none; transition: opacity 0.3s;
+  }
+  .modal-overlay.show { opacity: 1; pointer-events: all; }
+  .modal-content {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 18px; padding: 28px; width: 560px; max-width: 92vw;
+    max-height: 85vh; overflow-y: auto;
+    transform: translateY(20px) scale(0.97); transition: transform 0.3s;
+  }
+  .modal-overlay.show .modal-content { transform: translateY(0) scale(1); }
+
+  /* Upload zone */
+  .upload-zone {
+    border: 2px dashed var(--border); border-radius: 14px;
+    padding: 40px 20px; text-align: center; cursor: pointer;
+    transition: all 0.3s; position: relative; overflow: hidden;
+  }
+  .upload-zone:hover, .upload-zone.dragover {
+    border-color: var(--primary); background: rgba(0,229,160,0.04);
+  }
+  .upload-zone.dragover::after {
+    content: ''; position: absolute; inset: 0;
+    background: rgba(0,229,160,0.08);
+    animation: pulse-bg 1s ease infinite;
+  }
+  @keyframes pulse-bg { 0%,100% { opacity: 0.5; } 50% { opacity: 1; } }
+
+  /* Toast */
+  .toast-container { position: fixed; top: 24px; right: 24px; z-index: 200; display: flex; flex-direction: column; gap: 10px; }
+  .toast {
+    background: var(--card); border: 1px solid var(--border);
+    padding: 14px 20px; border-radius: 12px; display: flex; align-items: center; gap: 12px;
+    font-size: 14px; box-shadow: 0 8px 30px rgba(0,0,0,0.4);
+    animation: toast-in 0.35s ease;
+    min-width: 280px;
+  }
+  .toast.out { animation: toast-out 0.3s ease forwards; }
+  @keyframes toast-in { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+  @keyframes toast-out { to { transform: translateX(100%); opacity: 0; } }
+
+  /* Post action buttons */
+  .post-action {
+    display: flex; align-items: center; gap: 6px;
+    padding: 8px 14px; border-radius: 8px; cursor: pointer;
+    color: var(--muted); font-size: 13px; transition: all 0.2s;
+    background: none; border: none; font-family: 'DM Sans';
+  }
+  .post-action:hover { background: rgba(255,255,255,0.05); }
+  .post-action.liked { color: var(--accent); }
+  .post-action.liked i { animation: like-pop 0.35s ease; }
+  @keyframes like-pop { 0% { transform: scale(1); } 50% { transform: scale(1.3); } 100% { transform: scale(1); } }
+
+  /* File type badges */
+  .file-badge {
+    display: inline-flex; align-items: center; gap: 4px;
+    padding: 3px 10px; border-radius: 6px; font-size: 11px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.5px;
+  }
+  .file-badge.pdf { background: rgba(255,71,87,0.15); color: #FF6B7A; }
+  .file-badge.img { background: rgba(0,229,160,0.15); color: var(--primary); }
+  .file-badge.doc { background: rgba(66,133,244,0.15); color: #5B9CFF; }
+  .file-badge.ppt { background: rgba(255,190,11,0.15); color: var(--warning); }
+  .file-badge.zip { background: rgba(171,71,255,0.15); color: #C084FC; }
+
+  /* Connection button states */
+  .connect-btn { transition: all 0.25s; }
+  .connect-btn.sent { background: rgba(0,229,160,0.1); color: var(--primary); border: 1.5px solid var(--primary); }
+  .connect-btn.connected { background: rgba(0,229,160,0.15); color: var(--primary); }
+
+  /* Floating blob animation */
+  .blob {
+    position: fixed; border-radius: 50%; filter: blur(80px); opacity: 0.4;
+    animation: float-blob 20s ease-in-out infinite alternate; z-index: -1; pointer-events: none;
+  }
+  @keyframes float-blob {
+    0% { transform: translate(0, 0) scale(1); }
+    33% { transform: translate(30px, -50px) scale(1.1); }
+    66% { transform: translate(-20px, 30px) scale(0.9); }
+    100% { transform: translate(10px, -20px) scale(1.05); }
+  }
+
+  /* Note card hover effect */
+  .note-card { position: relative; overflow: hidden; }
+  .note-card::before {
+    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+    background: linear-gradient(90deg, var(--primary), var(--accent));
+    transform: scaleX(0); transform-origin: left; transition: transform 0.4s;
+  }
+  .note-card:hover::before { transform: scaleX(1); }
+
+  /* Online indicator */
+  .online-dot {
+    width: 10px; height: 10px; background: var(--primary); border-radius: 50%;
+    border: 2px solid var(--card); position: absolute; bottom: 0; right: 0;
+  }
+
+  /* Comment section slide */
+  .comment-section {
+    max-height: 0; overflow: hidden; transition: max-height 0.4s ease;
+  }
+  .comment-section.open { max-height: 600px; }
+
+  /* Notification badge */
+  .notif-badge {
+    position: absolute; top: 4px; right: 12px;
+    width: 8px; height: 8px; background: var(--accent);
+    border-radius: 50%; border: 2px solid var(--bg2);
+  }
+
+  /* Responsive */
+  @media (max-width: 1200px) { .right-sidebar { display: none; } .main-content { margin-right: 0; } }
+  @media (max-width: 768px) {
+    .sidebar { transform: translateX(-100%); width: 240px; }
+    .sidebar.open { transform: translateX(0); }
+    .main-content { margin-left: 0; padding: 16px; }
+    .mobile-header { display: flex !important; }
+  }
+
+  /* Smooth view transitions */
+  .view-section { animation: fade-up 0.35s ease; }
+  @keyframes fade-up { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+</style>
 </head>
-<body class="relative w-full h-screen bg-[#E1EEBC] overflow-hidden font-sans antialiased text-gray-800">
+<body>
 
-  <!-- Background Decorative 3D Elements -->
-  <div class="fixed inset-0 pointer-events-none overflow-hidden">
-    <div class="absolute -top-20 -left-20 w-96 h-96 bg-[#90C67C] rounded-full blur-[100px] pulse-element"></div>
-    <div class="absolute top-1/2 -right-20 w-80 h-80 bg-[#67AE6E] rounded-full blur-[80px] pulse-element" style="animation-delay: -2s"></div>
-    <div class="absolute -bottom-20 left-1/4 w-96 h-96 bg-[#328E6E] rounded-full blur-[120px] pulse-element" style="animation-delay: -4s"></div>
+<!-- Ambient blobs -->
+<div class="blob" style="width:400px;height:400px;background:rgba(0,229,160,0.08);top:-100px;left:-100px;"></div>
+<div class="blob" style="width:350px;height:350px;background:rgba(255,112,67,0.06);bottom:-80px;right:-80px;animation-delay:-7s;"></div>
+
+<!-- Toast Container -->
+<div class="toast-container" id="toastContainer"></div>
+
+<!-- Mobile Header -->
+<header class="mobile-header hidden items-center justify-between p-4 border-b" style="border-color:var(--border);background:var(--bg2);">
+  <button onclick="document.getElementById('sidebar').classList.toggle('open')" class="btn-ghost text-xl"><i class="fas fa-bars"></i></button>
+  <h2 class="text-lg font-bold" style="color:var(--primary);font-family:'Space Grotesk';">LibConnect</h2>
+  <button onclick="openUploadModal()" class="btn-ghost"><i class="fas fa-plus"></i></button>
+</header>
+
+<!-- Sidebar -->
+<aside class="sidebar" id="sidebar">
+  <div class="p-6 pb-2">
+    <h2 class="text-xl font-bold flex items-center gap-3" style="font-family:'Space Grotesk';">
+      <span style="color:var(--primary);"><i class="fas fa-graduation-cap"></i></span>
+      <span>Lib<span style="color:var(--primary);">Connect</span></span>
+    </h2>
+    <p class="text-xs mt-1" style="color:var(--muted);">Connect. Learn. Grow.</p>
   </div>
-
-  <!-- --- Main Carousel --- -->
-  <div 
-    id="carousel"
-    class="w-full h-full flex overflow-x-auto snap-x snap-mandatory hide-scrollbar scroll-smooth relative z-10"
-  >
-    <!-- Slide 1: Welcome -->
-    <div class="min-w-full h-full flex flex-col items-center justify-center p-6 snap-center text-center">
-      <div class="max-w-md w-full glass-card rounded-[2.5rem] p-8 flex flex-col items-center transform transition-transform duration-700">
-        <div class="w-full h-48 mb-8 rounded-2xl overflow-hidden img-perspective">
-          <img src="https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&q=80&w=800" 
-               alt="Students studying" class="w-full h-full object-cover img-tilt float-element shadow-xl">
-        </div>
-        <div class="w-16 h-16 text-[#328E6E] mb-4">
-          <i data-lucide="sparkles"></i>
-        </div>
-        <h1 class="text-3xl font-extrabold text-[#328E6E] mb-4 leading-tight">Welcome to LibConnect</h1>
-        <p class="text-[#328E6E]/80 font-medium mb-8 leading-relaxed">
-          The all-in-one digital hub for smart students. Your library, notes, and community in one 3D space.
-        </p>
-        <button class="next-btn btn-3d bg-[#328E6E] text-[#E1EEBC] px-10 py-3 rounded-2xl font-bold flex items-center gap-2">
-          Explore Now <i data-lucide="chevron-right" class="w-5 h-5"></i>
-        </button>
-      </div>
+  <nav class="flex-1 py-4">
+    <div class="nav-item active" data-view="feed" onclick="switchView('feed')">
+      <i class="fas fa-house"></i> <span>Feed</span>
     </div>
-
-    <!-- Slide 2: Library -->
-    <div class="min-w-full h-full flex flex-col items-center justify-center p-6 snap-center text-center">
-      <div class="max-w-md w-full glass-card rounded-[2.5rem] p-8 flex flex-col items-center">
-        <div class="w-full h-48 mb-8 rounded-2xl overflow-hidden img-perspective">
-          <img src="https://images.unsplash.com/photo-1481627834876-b7833e8f5570?auto=format&fit=crop&q=80&w=800" 
-               alt="Library" class="w-full h-full object-cover img-tilt float-element shadow-xl">
-        </div>
-        <div class="w-16 h-16 text-[#328E6E] mb-4">
-          <i data-lucide="book-open-check"></i>
-        </div>
-        <h1 class="text-3xl font-extrabold text-[#328E6E] mb-4 leading-tight">Smart Library</h1>
-        <p class="text-[#328E6E]/80 font-medium mb-8 leading-relaxed">
-          Instant access to premium academic resources. No more heavy bags, just pure knowledge at your fingertips.
-        </p>
-        <button class="next-btn btn-3d bg-[#328E6E] text-[#E1EEBC] px-10 py-3 rounded-2xl font-bold">
-          Next Feature
-        </button>
-      </div>
+    <div class="nav-item" data-view="library" onclick="switchView('library')">
+      <i class="fas fa-book-open"></i> <span>Notes Library</span>
     </div>
-
-    <!-- Slide 3: Notes -->
-    <div class="min-w-full h-full flex flex-col items-center justify-center p-6 snap-center text-center">
-      <div class="max-w-md w-full glass-card rounded-[2.5rem] p-8 flex flex-col items-center">
-        <div class="w-full h-48 mb-8 rounded-2xl overflow-hidden img-perspective">
-          <img src="https://images.unsplash.com/photo-1517842645767-c639042777db?auto=format&fit=crop&q=80&w=800" 
-               alt="Notes" class="w-full h-full object-cover img-tilt float-element shadow-xl">
-        </div>
-        <div class="w-16 h-16 text-[#328E6E] mb-4">
-          <i data-lucide="pen-tool"></i>
-        </div>
-        <h1 class="text-3xl font-extrabold text-[#328E6E] mb-4 leading-tight">Interactive Notes</h1>
-        <p class="text-[#328E6E]/80 font-medium mb-8 leading-relaxed">
-          Create, edit, and sync your study notes across all devices. Study smarter with rich media integration.
-        </p>
-        <button class="next-btn btn-3d bg-[#328E6E] text-[#E1EEBC] px-10 py-3 rounded-2xl font-bold">
-          Keep Going
-        </button>
-      </div>
+    <div class="nav-item" onclick="openUploadModal()">
+      <i class="fas fa-cloud-arrow-up"></i> <span>Upload</span>
     </div>
-
-    <!-- Slide 4: Community -->
-    <div class="min-w-full h-full flex flex-col items-center justify-center p-6 snap-center text-center">
-      <div class="max-w-md w-full glass-card rounded-[2.5rem] p-8 flex flex-col items-center">
-        <div class="w-full h-48 mb-8 rounded-2xl overflow-hidden img-perspective">
-          <img src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&q=80&w=800" 
-               alt="Teamwork" class="w-full h-full object-cover img-tilt float-element shadow-xl">
-        </div>
-        <div class="w-16 h-16 text-[#328E6E] mb-4">
-          <i data-lucide="users-2"></i>
-        </div>
-        <h1 class="text-3xl font-extrabold text-[#328E6E] mb-4 leading-tight">Collaborative Edge</h1>
-        <p class="text-[#328E6E]/80 font-medium mb-8 leading-relaxed">
-          Connect with peers. Share insights, trade notes, and grow together in a vibrant student community.
-        </p>
-        <button class="next-btn btn-3d bg-[#328E6E] text-[#E1EEBC] px-10 py-3 rounded-2xl font-bold">
-          One Last Step
-        </button>
-      </div>
+    <div class="nav-item" data-view="seniors" onclick="switchView('seniors')">
+      <i class="fas fa-user-tie"></i> <span>Find Seniors</span>
     </div>
-
-    <!-- Slide 5: CTA -->
-    <div class="min-w-full h-full flex flex-col items-center justify-center p-6 snap-center text-center">
-      <div class="max-w-md w-full glass-card rounded-[3rem] p-10 flex flex-col items-center border-2 border-[#328E6E]/20">
-        <div class="w-32 h-32 bg-[#328E6E] rounded-[2rem] flex items-center justify-center text-[#E1EEBC] mb-8 shadow-2xl rotate-12 float-element">
-          <i data-lucide="rocket" class="w-16 h-16"></i>
-        </div>
-        <h1 class="text-4xl font-black text-[#328E6E] mb-4 tracking-tight">Ready to Level Up?</h1>
-        <p class="text-[#328E6E] font-semibold mb-12 opacity-70">
-          Your academic journey just got a major upgrade. Join LibConnect now.
-        </p>
-        <button onclick="alert('Welcome to LibConnect!')" class="w-full btn-3d bg-[#328E6E] text-[#E1EEBC] py-5 rounded-[1.5rem] font-black text-xl shadow-xl hover:scale-[1.02] transition-transform">
-          GET STARTED
-        </button>
+    <div class="nav-item" data-view="messages" onclick="switchView('messages')">
+      <i class="fas fa-message"></i> <span>Messages</span>
+      <span class="notif-badge"></span>
+    </div>
+    <div class="nav-item" data-view="profile" onclick="switchView('profile')">
+      <i class="fas fa-user"></i> <span>My Profile</span>
+    </div>
+  </nav>
+  <div class="p-5 border-t" style="border-color:var(--border);">
+    <div class="flex items-center gap-3">
+      <img src="https://picsum.photos/seed/myprofile/100/100.jpg" class="avatar avatar-sm" alt="You">
+      <div class="flex-1 min-w-0">
+        <p class="text-sm font-semibold truncate">Aditya Nair</p>
+        <p class="text-xs truncate" style="color:var(--muted);">CS '26 · 2nd Year</p>
       </div>
     </div>
   </div>
+</aside>
 
-  <!-- --- Navigation Dots --- -->
-  <div id="nav-dots-container" class="absolute bottom-12 left-0 w-full flex justify-center gap-3 z-20 transition-all duration-1000">
-    <div class="nav-dot h-3 w-3 rounded-full bg-[#328E6E] opacity-30 transition-all duration-300 dot-active"></div>
-    <div class="nav-dot h-3 w-3 rounded-full bg-[#328E6E] opacity-30 transition-all duration-300"></div>
-    <div class="nav-dot h-3 w-3 rounded-full bg-[#328E6E] opacity-30 transition-all duration-300"></div>
-    <div class="nav-dot h-3 w-3 rounded-full bg-[#328E6E] opacity-30 transition-all duration-300"></div>
-    <div class="nav-dot h-3 w-3 rounded-full bg-[#328E6E] opacity-30 transition-all duration-300"></div>
-  </div>
+<!-- Main Content -->
+<main class="main-content" id="mainContent"></main>
 
-  <!-- --- Splash Screen --- -->
-  <div id="splash-screen" class="absolute inset-0 z-50 flex flex-col items-center justify-center bg-[#E1EEBC] transition-all duration-1000 ease-in-out">
-    <div class="z-10 flex flex-col items-center animate-fade-in-up">
-      <!-- 3D Logo Container -->
-      <div class="relative group cursor-pointer mb-10">
-        <div class="absolute inset-0 bg-[#328E6E] rounded-[2.5rem] blur-xl opacity-20 group-hover:opacity-40 transition-opacity"></div>
-        <div class="relative w-44 h-44 bg-white rounded-[2.5rem] shadow-[0_20px_50px_rgba(50,142,110,0.3)] border-b-8 border-r-8 border-[#328E6E]/10 flex items-center justify-center p-6 transform transition-all hover:scale-105 active:scale-95 overflow-hidden">
-          <!-- Placeholder for User Logo -->
-          <div class="w-full h-full border-4 border-dashed border-[#90C67C]/50 rounded-[1.8rem] flex flex-col items-center justify-center text-[#328E6E]/30 bg-[#E1EEBC]/20">
-            <i data-lucide="image-plus" class="w-12 h-12 mb-2"></i>
-            <span class="font-bold text-[10px] uppercase tracking-widest text-center">Your Logo<br>Here</span>
+<!-- Right Sidebar -->
+<aside class="right-sidebar" id="rightSidebar"></aside>
+
+<!-- Upload Modal -->
+<div class="modal-overlay" id="uploadModal">
+  <div class="modal-content" id="uploadModalContent"></div>
+</div>
+
+<!-- Note Detail Modal -->
+<div class="modal-overlay" id="noteDetailModal">
+  <div class="modal-content" id="noteDetailContent" style="width:620px;"></div>
+</div>
+
+<script>
+// ========================================
+// DATA
+// ========================================
+const currentUser = {
+  id: 'u0', name: 'Aditya Nair', branch: 'Computer Science', year: '2nd Year',
+  batch: 2026, avatar: 'https://picsum.photos/seed/myprofile/100/100.jpg',
+  bio: 'Passionate about system design and full-stack development. Looking for internship opportunities.',
+  skills: ['JavaScript', 'Python', 'React', 'Node.js', 'DBMS', 'Git'],
+  connections: 47, posts: 12, notesShared: 8
+};
+
+const users = [
+  { id:'u1', name:'Arjun Mehta', branch:'Computer Science', year:'4th Year', batch:2024, avatar:'https://picsum.photos/seed/arjun/100/100.jpg', bio:'Placed at Microsoft. Love mentoring juniors.', skills:['System Design','C++','DSA','Java'], connections:234, isSenior:true },
+  { id:'u2', name:'Priya Sharma', branch:'Information Tech', year:'4th Year', batch:2024, avatar:'https://picsum.photos/seed/priya/100/100.jpg', bio:'DBMS enthusiast. Open source contributor.', skills:['SQL','MongoDB','Python','Flask'], connections:189, isSenior:true },
+  { id:'u3', name:'Rahul Verma', branch:'Computer Science', year:'2nd Year', batch:2026, avatar:'https://picsum.photos/seed/rahul/100/100.jpg', bio:'Getting started with competitive programming.', skills:['C++','Basic DSA'], connections:32, isSenior:false },
+  { id:'u4', name:'Sneha Patel', branch:'Computer Science', year:'3rd Year', batch:2025, avatar:'https://picsum.photos/seed/sneha/100/100.jpg', bio:'ML researcher wannabe. Building stuff with TensorFlow.', skills:['Python','TensorFlow','Pandas','OpenCV'], connections:156, isSenior:true },
+  { id:'u5', name:'Vikram Singh', branch:'Information Tech', year:'2nd Year', batch:2026, avatar:'https://picsum.photos/seed/vikram/100/100.jpg', bio:'Looking for project partners for hackathons.', skills:['HTML','CSS','JavaScript'], connections:28, isSenior:false },
+  { id:'u6', name:'Ananya Gupta', branch:'Computer Science', year:'4th Year', batch:2024, avatar:'https://picsum.photos/seed/ananya/100/100.jpg', bio:'Got offers from Amazon & Flipkart. Happy to help!', skills:['Java','Spring Boot','AWS','System Design'], connections:312, isSenior:true },
+  { id:'u7', name:'Karthik Reddy', branch:'Computer Science', year:'2nd Year', batch:2026, avatar:'https://picsum.photos/seed/karthik/100/100.jpg', bio:'Exploring web dev frameworks.', skills:['React','Tailwind','Firebase'], connections:41, isSenior:false },
+  { id:'u8', name:'Meera Joshi', branch:'Information Tech', year:'3rd Year', batch:2025, avatar:'https://picsum.photos/seed/meera/100/100.jpg', bio:'OS and networking nerd. Teaching assistant for OS lab.', skills:['C','Linux','Networking','Shell'], connections:98, isSenior:true },
+];
+
+const subjects = ['Data Structures & Algorithms', 'Operating Systems', 'Database Management', 'Computer Networks', 'Machine Learning', 'Web Development', 'Mathematics', 'Digital Logic Design'];
+
+const posts = [
+  { id:'p1', author:users[0], time:'2 hours ago', content:'Just finished my Microsoft onboarding! Here are 5 things I wish I knew before starting:\n\n1. Start reading system design books early — "Designing Data-Intensive Applications" is gold.\n2. DSA is important but don\'t ignore projects.\n3. Contribute to open source — it makes your resume stand out.\n4. Practice mock interviews with friends, not just LeetCode alone.\n5. Soft skills matter more than you think.\n\nDM me if you need any placement prep resources!', image:'https://picsum.photos/seed/msft-post/800/450.jpg', likes:187, comments:[
+    { author:users[2], text:'This is so helpful! Can you share the system design book PDF?', time:'1h ago' },
+    { author:users[6], text:'Congrats Arjun bhaiya! Please share interview questions too.', time:'45m ago' }
+  ], isLiked:false },
+  { id:'p2', author:users[1], time:'5 hours ago', content:'Uploaded my complete DBMS notes covering normalization (1NF to 5NF), ER diagrams, SQL queries, and transaction management. Check the Notes Library under "Database Management"!', image:null, likes:94, comments:[
+    { author:users[4], text:'Thank you didi! Exactly what I needed before midsems.', time:'3h ago' }
+  ], isLiked:false },
+  { id:'p3', author:users[2], time:'8 hours ago', content:'Can someone recommend good DSA practice platforms besides LeetCode? I\'m stuck at the easy-medium transition and need structured practice. Currently doing Striver\'s SDE sheet but feel like I need more variety.', image:null, likes:23, comments:[
+    { author:users[0], text:'Try Codeforces (Div 2 problems) and GeeksforGeeks. Also, don\'t rush — spend time understanding patterns, not just solving.', time:'7h ago' },
+    { author:users[3], text:'InterviewBit is great for company-specific patterns. I also recommend neetcode.io for categorized problems.', time:'6h ago' },
+    { author:users[7], text:'Join the college CP group! We do weekly contests together.', time:'5h ago' }
+  ], isLiked:false },
+  { id:'p4', author:users[3], time:'1 day ago', content:'Built a real-time object detection system using YOLOv8 for our college parking management. It detects empty spots and shows availability on a web dashboard.\n\nTech stack: Python, YOLOv8, Flask, OpenCV, MQTT\n\nLooking for teammates to extend this into a proper startup idea!', image:'https://picsum.photos/seed/yolo-project/800/450.jpg', likes:156, comments:[
+    { author:users[6], text:'This is incredible! Can I join the project? I can build the frontend dashboard.', time:'22h ago' },
+    { author:users[1], text:'Have you thought about adding number plate recognition? That would make it enterprise-ready.', time:'20h ago' }
+  ], isLiked:false },
+  { id:'p5', author:users[5], time:'1 day ago', content:'My Amazon interview experience:\n\nRound 1 (Online Assessment): 2 DSA questions + work simulation\nRound 2 (Technical): Linked List manipulation + HashMap problem\nRound 3 (Leadership): Behavioral questions using STAR method\nRound 4 (Bar Raiser): System design for a URL shortener\n\nKey takeaway: Amazon cares A LOT about leadership principles. Prepare stories for each one. I got "Customer Obsession" and "Deliver Results" questions in every round.', image:null, likes:312, comments:[
+    { author:users[2], text:'Can you share what STAR method responses look like? I always struggle with behavioral rounds.', time:'23h ago' },
+    { author:users[7], text:'This is gold. Please do a session on campus for 3rd years!', time:'20h ago' }
+  ], isLiked:false },
+  { id:'p6', author:users[4], time:'2 days ago', content:'Looking for 2 teammates for the upcoming Smart India Hackathon! We\'re building an AI-based attendance system using facial recognition. Need someone good at backend (Node/Django) and someone who knows ML basics.\n\nDeadline to form team: This Friday. DM if interested!', image:null, likes:41, comments:[], isLiked:false },
+];
+
+const notes = [
+  { id:'n1', title:'Complete DSA Notes — Semester 3', subject:'Data Structures & Algorithms', author:users[0], type:'pdf', size:'12.4 MB', downloads:342, date:'2 days ago', desc:'Comprehensive notes covering arrays, linked lists, trees, graphs, sorting, searching, DP, and greedy algorithms with solved examples.', pages:156, image:'https://picsum.photos/seed/dsa-notes/400/250.jpg' },
+  { id:'n2', title:'OS Lab Manual with Programs', subject:'Operating Systems', author:users[7], type:'pdf', size:'8.7 MB', downloads:189, date:'5 days ago', desc:'All OS lab programs including process scheduling (FCFS, SJF, RR), deadlock detection, banker\'s algorithm, page replacement, and file allocation methods.', pages:78, image:'https://picsum.photos/seed/os-lab/400/250.jpg' },
+  { id:'n3', title:'DBMS Normalization Cheat Sheet', subject:'Database Management', author:users[1], type:'img', size:'2.1 MB', downloads:267, date:'1 week ago', desc:'Visual cheat sheet showing step-by-step normalization from unnormalized form to 5NF with real-world examples.', pages:4, image:'https://picsum.photos/seed/dbms-cheat/400/250.jpg' },
+  { id:'n4', title:'SQL Practice Questions — 150 Queries', subject:'Database Management', author:users[1], type:'doc', size:'5.3 MB', downloads:421, date:'2 weeks ago', desc:'150 SQL queries arranged by difficulty: basic SELECT, JOINs, subqueries, window functions, and complex analytical queries with solutions.', pages:45, image:'https://picsum.photos/seed/sql-queries/400/250.jpg' },
+  { id:'n5', title:'Computer Networks — 5-Layer Model Notes', subject:'Computer Networks', author:users[7], type:'pdf', size:'15.2 MB', downloads:178, date:'3 days ago', desc:'Detailed notes on OSI and TCP/IP models covering physical layer to application layer with diagrams, protocols, and interview questions.', pages:198, image:'https://picsum.photos/seed/cn-notes/400/250.jpg' },
+  { id:'n6', title:'ML Basics — From Scratch to Implementation', subject:'Machine Learning', author:users[3], type:'ppt', size:'22.8 MB', downloads:234, date:'1 week ago', desc:'Presentation covering supervised vs unsupervised learning, regression, classification, clustering, neural networks basics with Python code examples.', pages:89, image:'https://picsum.photos/seed/ml-basics/400/250.jpg' },
+  { id:'n7', title:'Handwritten Math Notes — Linear Algebra', subject:'Mathematics', author:users[2], type:'img', size:'6.5 MB', downloads:98, date:'4 days ago', desc:'Clean handwritten notes on matrices, determinants, eigenvalues, eigenvectors, vector spaces, and linear transformations.', pages:32, image:'https://picsum.photos/seed/math-notes/400/250.jpg' },
+  { id:'n8', title:'Full Stack Web Dev Roadmap 2024', subject:'Web Development', author:users[6], type:'pdf', size:'3.8 MB', downloads:567, date:'3 weeks ago', desc:'Complete roadmap from HTML/CSS basics to deploying full-stack apps. Includes React, Node.js, databases, authentication, and deployment guides.', pages:34, image:'https://picsum.photos/seed/web-roadmap/400/250.jpg' },
+  { id:'n9', title:'Digital Logic — Gate-Level Design Examples', subject:'Digital Logic Design', author:users[5], type:'pdf', size:'4.2 MB', downloads:145, date:'1 week ago', desc:'Solved examples for combinational and sequential circuits: multiplexers, decoders, counters, registers, and state machines.', pages:56, image:'https://picsum.photos/seed/dld-notes/400/250.jpg' },
+  { id:'n10', title:'Graph Algorithms — Visual Guide', subject:'Data Structures & Algorithms', author:users[0], type:'img', size:'3.4 MB', downloads:289, date:'5 days ago', desc:'Visual explanations of BFS, DFS, Dijkstra, Bellman-Ford, Kruskal, Prim, and Topological Sort with step-by-step trace tables.', pages:28, image:'https://picsum.photos/seed/graph-algo/400/250.jpg' },
+  { id:'n11', title:'CNN Architecture Notes with Diagrams', subject:'Machine Learning', author:users[3], type:'ppt', size:'18.5 MB', downloads:167, date:'2 weeks ago', desc:'Deep dive into CNN architectures: LeNet, AlexNet, VGG, ResNet, Inception with layer-by-layer diagrams and PyTorch implementation.', pages:67, image:'https://picsum.photos/seed/cnn-notes/400/250.jpg' },
+  { id:'n12', title:'React Hooks & State Management Guide', subject:'Web Development', author:users[6], type:'doc', size:'2.9 MB', downloads:312, date:'1 week ago', desc:'Practical guide to useState, useEffect, useContext, useReducer, and custom hooks. Comparison of Redux vs Zustand vs Context API.', pages:38, image:'https://picsum.photos/seed/react-hooks/400/250.jpg' },
+];
+
+const messages = [
+  { id:'m1', user:users[0], lastMsg:'Sure, I\'ll share those resources tonight!', time:'10m ago', unread:2, messages:[
+    { from:'them', text:'Hey Aditya! Saw your post about DSA practice.', time:'2:30 PM' },
+    { from:'me', text:'Hi Arjun bhaiya! Yes, I\'m struggling with graph problems.', time:'2:32 PM' },
+    { from:'them', text:'No worries, graph problems click once you understand the patterns. BFS/DFS is the foundation.', time:'2:35 PM' },
+    { from:'me', text:'Can you recommend some good resources specifically for graphs?', time:'2:40 PM' },
+    { from:'them', text:'Sure, I\'ll share those resources tonight!', time:'2:42 PM' }
+  ]},
+  { id:'m2', user:users[3], lastMsg:'Let\'s meet at the lab tomorrow at 3 PM?', time:'1h ago', unread:1, messages:[
+    { from:'them', text:'Hey! Interested in joining our ML project?', time:'1:00 PM' },
+    { from:'me', text:'Absolutely! What stack are you using?', time:'1:10 PM' },
+    { from:'them', text:'Python + TensorFlow. We need help with the data pipeline.', time:'1:15 PM' },
+    { from:'them', text:'Let\'s meet at the lab tomorrow at 3 PM?', time:'1:20 PM' }
+  ]},
+  { id:'m3', user:users[5], lastMsg:'I\'ll send the Amazon questions PDF tomorrow.', time:'3h ago', unread:0, messages:[
+    { from:'me', text:'Ananya didi, your interview post was super helpful!', time:'11:00 AM' },
+    { from:'them', text:'Glad it helped! Feel free to ask any specific questions.', time:'11:30 AM' },
+    { from:'me', text:'Can you share some sample behavioral questions?', time:'11:35 AM' },
+    { from:'them', text:'I\'ll send the Amazon questions PDF tomorrow.', time:'12:00 PM' }
+  ]},
+];
+
+// ========================================
+// STATE
+// ========================================
+const state = {
+  currentView: 'feed',
+  likedPosts: new Set(),
+  connectedUsers: new Set(['u1']),
+  pendingConnections: new Set(),
+  searchQuery: '',
+  selectedSubject: 'all',
+  selectedType: 'all',
+  uploadedFiles: [],
+  openComments: new Set(),
+  activeChat: null,
+};
+
+// ========================================
+// UTILITY FUNCTIONS
+// ========================================
+function showToast(message, type = 'success') {
+  const container = document.getElementById('toastContainer');
+  const toast = document.createElement('div');
+  toast.className = 'toast';
+  const iconMap = { success: 'fa-circle-check', error: 'fa-circle-xmark', info: 'fa-circle-info' };
+  const colorMap = { success: 'var(--primary)', error: 'var(--danger)', info: '#5B9CFF' };
+  toast.innerHTML = `<i class="fas ${iconMap[type]}" style="color:${colorMap[type]};font-size:18px;"></i><span>${message}</span>`;
+  container.appendChild(toast);
+  setTimeout(() => { toast.classList.add('out'); setTimeout(() => toast.remove(), 300); }, 3000);
+}
+
+function formatContent(text) {
+  return text.replace(/\n/g, '<br>');
+}
+
+function getFileIcon(type) {
+  const map = { pdf:'fa-file-pdf', img:'fa-file-image', doc:'fa-file-word', ppt:'fa-file-powerpoint', zip:'fa-file-zipper' };
+  return map[type] || 'fa-file';
+}
+
+function getFileLabel(type) {
+  const map = { pdf:'PDF', img:'Image', doc:'DOC', ppt:'PPT', zip:'ZIP' };
+  return map[type] || 'File';
+}
+
+// ========================================
+// VIEW SWITCHING
+// ========================================
+function switchView(view) {
+  state.currentView = view;
+  state.activeChat = null;
+  document.querySelectorAll('.nav-item').forEach(n => {
+    n.classList.toggle('active', n.dataset.view === view);
+  });
+  renderMain();
+  renderRightSidebar();
+  // Close mobile sidebar
+  document.getElementById('sidebar').classList.remove('open');
+}
+
+// ========================================
+// RENDER: MAIN CONTENT
+// ========================================
+function renderMain() {
+  const main = document.getElementById('mainContent');
+  switch(state.currentView) {
+    case 'feed': main.innerHTML = renderFeed(); break;
+    case 'library': main.innerHTML = renderLibrary(); break;
+    case 'seniors': main.innerHTML = renderSeniors(); break;
+    case 'messages': main.innerHTML = renderMessages(); break;
+    case 'profile': main.innerHTML = renderProfile(); break;
+    default: main.innerHTML = renderFeed();
+  }
+}
+
+// ========================================
+// FEED VIEW
+// ========================================
+function renderFeed() {
+  let html = `<div class="view-section">`;
+  // Create post box
+  html += `<div class="card mb-5">
+    <div class="flex items-center gap-3 mb-3">
+      <img src="${currentUser.avatar}" class="avatar" alt="You">
+      <div class="input-field" style="cursor:pointer;padding:12px 18px;color:var(--muted);" onclick="openUploadModal()">Share something with the LibConnect...</div>
+    </div>
+    <div class="flex gap-2 border-t pt-3" style="border-color:var(--border);">
+      <button class="btn-ghost flex-1 flex items-center justify-center gap-2" onclick="openUploadModal()"><i class="fas fa-image" style="color:var(--primary);"></i> Photo/File</button>
+      <button class="btn-ghost flex-1 flex items-center justify-center gap-2" onclick="openUploadModal()"><i class="fas fa-file-arrow-up" style="color:var(--warning);"></i> Upload Notes</button>
+      <button class="btn-ghost flex-1 flex items-center justify-center gap-2"><i class="fas fa-pen" style="color:var(--accent);"></i> Write Post</button>
+    </div>
+  </div>`;
+
+  // Posts
+  posts.forEach(post => {
+    const liked = state.likedPosts.has(post.id);
+    html += `<div class="card mb-4">
+      <div class="flex items-start gap-3 mb-3">
+        <img src="${post.author.avatar}" class="avatar" alt="${post.author.name}">
+        <div class="flex-1 min-w-0">
+          <div class="flex items-center gap-2 flex-wrap">
+            <span class="font-semibold text-sm">${post.author.name}</span>
+            ${post.author.isSenior ? '<span style="color:var(--primary);font-size:11px;font-weight:700;background:rgba(0,229,160,0.1);padding:2px 8px;border-radius:4px;">SENIOR</span>' : ''}
+            <span style="color:var(--muted);font-size:12px;">· ${post.time}</span>
+          </div>
+          <p style="color:var(--muted);font-size:12px;">${post.author.branch} · ${post.author.year}</p>
+        </div>
+        <button class="btn-ghost" style="padding:6px 8px;"><i class="fas fa-ellipsis"></i></button>
+      </div>
+      <div class="text-sm leading-relaxed mb-3" style="color:#c8cdd8;">${formatContent(post.content)}</div>
+      ${post.image ? `<img src="${post.image}" class="w-full rounded-xl mb-3" style="max-height:400px;object-fit:cover;" alt="Post image">` : ''}
+      <div class="flex items-center gap-1 mb-3" style="color:var(--muted);font-size:12px;">
+        <span><strong style="color:var(--text);">${post.likes + (liked ? 1 : 0)}</strong> likes</span>
+        <span>·</span>
+        <span><strong style="color:var(--text);">${post.comments.length}</strong> comments</span>
+      </div>
+      <div class="flex border-t" style="border-color:var(--border);">
+        <button class="post-action flex-1 ${liked ? 'liked' : ''}" onclick="toggleLike('${post.id}')">
+          <i class="fas ${liked ? 'fa-heart' : 'fa-heart'}"></i> ${liked ? 'Liked' : 'Like'}
+        </button>
+        <button class="post-action flex-1" onclick="toggleComments('${post.id}')">
+          <i class="fas fa-comment"></i> Comment
+        </button>
+        <button class="post-action flex-1" onclick="showToast('Post shared to your connections!','info')">
+          <i class="fas fa-share"></i> Share
+        </button>
+      </div>
+      <div class="comment-section ${state.openComments.has(post.id) ? 'open' : ''}" id="comments-${post.id}">
+        <div class="border-t pt-3 mt-1" style="border-color:var(--border);">
+          ${post.comments.map(c => `
+            <div class="flex gap-2 mb-3">
+              <img src="${c.author.avatar}" class="avatar avatar-sm" alt="${c.author.name}">
+              <div class="flex-1">
+                <div class="flex items-center gap-2">
+                  <span class="font-semibold text-xs">${c.author.name}</span>
+                  <span style="color:var(--muted);font-size:11px;">${c.time}</span>
+                </div>
+                <p class="text-sm mt-1" style="color:#b8bdd0;">${c.text}</p>
+              </div>
+            </div>
+          `).join('')}
+          <div class="flex gap-2 items-center mt-2">
+            <img src="${currentUser.avatar}" class="avatar avatar-sm" alt="You">
+            <input type="text" class="input-field" style="padding:8px 14px;font-size:13px;" placeholder="Write a comment..." onkeydown="if(event.key==='Enter'){addComment('${post.id}',this);event.preventDefault();}">
           </div>
         </div>
       </div>
+    </div>`;
+  });
+  html += `</div>`;
+  return html;
+}
 
-      <div class="text-center overflow-hidden">
-        <h1 class="text-5xl font-black text-[#328E6E] tracking-tighter mb-2">LibConnect</h1>
-        <div class="h-1 w-12 bg-[#328E6E] mx-auto rounded-full mb-4"></div>
-        <p class="text-[#67AE6E] font-bold tracking-[0.3em] uppercase text-xs">Innovation in Study</p>
+function toggleLike(postId) {
+  if (state.likedPosts.has(postId)) state.likedPosts.delete(postId);
+  else state.likedPosts.add(postId);
+  renderMain();
+}
+
+function toggleComments(postId) {
+  if (state.openComments.has(postId)) state.openComments.delete(postId);
+  else state.openComments.add(postId);
+  renderMain();
+}
+
+function addComment(postId, input) {
+  const text = input.value.trim();
+  if (!text) return;
+  const post = posts.find(p => p.id === postId);
+  post.comments.push({ author: currentUser, text, time: 'Just now' });
+  state.openComments.add(postId);
+  showToast('Comment posted!');
+  renderMain();
+}
+
+// ========================================
+// LIBRARY VIEW
+// ========================================
+function renderLibrary() {
+  const filtered = notes.filter(n => {
+    const matchSubject = state.selectedSubject === 'all' || n.subject === state.selectedSubject;
+    const matchType = state.selectedType === 'all' || n.type === state.selectedType;
+    const matchSearch = !state.searchQuery || n.title.toLowerCase().includes(state.searchQuery.toLowerCase()) || n.subject.toLowerCase().includes(state.searchQuery.toLowerCase());
+    return matchSubject && matchType && matchSearch;
+  });
+
+  let html = `<div class="view-section">
+    <div class="flex items-center justify-between mb-6 flex-wrap gap-4">
+      <div>
+        <h1 class="text-2xl font-bold">Notes Library</h1>
+        <p class="text-sm mt-1" style="color:var(--muted);">${notes.length} resources shared by students</p>
       </div>
+      <button class="btn-primary flex items-center gap-2" onclick="openUploadModal()"><i class="fas fa-plus"></i> Upload Notes</button>
+    </div>
 
-      <div class="mt-16 flex items-end gap-1.5 h-6">
-        <div class="w-1.5 bg-[#328E6E] rounded-full animate-bounce h-2" style="animation-delay: 0s"></div>
-        <div class="w-1.5 bg-[#328E6E] rounded-full animate-bounce h-4" style="animation-delay: 0.1s"></div>
-        <div class="w-1.5 bg-[#328E6E] rounded-full animate-bounce h-6" style="animation-delay: 0.2s"></div>
+    <!-- Search -->
+    <div class="relative mb-5">
+      <i class="fas fa-search absolute left-4 top-1/2 -translate-y-1/2" style="color:var(--muted);"></i>
+      <input type="text" class="input-field" style="padding-left:42px;" placeholder="Search notes by title or subject..." value="${state.searchQuery}" oninput="state.searchQuery=this.value;renderMain();">
+    </div>
+
+    <!-- Subject Chips -->
+    <div class="flex flex-wrap gap-2 mb-4">
+      <span class="chip ${state.selectedSubject==='all'?'active':''}" onclick="state.selectedSubject='all';renderMain();">All Subjects</span>
+      ${subjects.map(s => `<span class="chip ${state.selectedSubject===s?'active':''}" onclick="state.selectedSubject='${s}';renderMain();">${s.split(' ')[0]} ${s.split(' ')[1]||''}</span>`).join('')}
+    </div>
+
+    <!-- Type Filter -->
+    <div class="flex gap-2 mb-6 flex-wrap">
+      <span class="chip ${state.selectedType==='all'?'active':''}" onclick="state.selectedType='all';renderMain();">All Types</span>
+      <span class="chip ${state.selectedType==='pdf'?'active':''}" onclick="state.selectedType='pdf';renderMain();"><i class="fas fa-file-pdf"></i> PDF</span>
+      <span class="chip ${state.selectedType==='img'?'active':''}" onclick="state.selectedType='img';renderMain();"><i class="fas fa-file-image"></i> Images</span>
+      <span class="chip ${state.selectedType==='doc'?'active':''}" onclick="state.selectedType='doc';renderMain();"><i class="fas fa-file-word"></i> Docs</span>
+      <span class="chip ${state.selectedType==='ppt'?'active':''}" onclick="state.selectedType='ppt';renderMain();"><i class="fas fa-file-powerpoint"></i> PPT</span>
+    </div>
+
+    <!-- Notes Grid -->
+    ${filtered.length === 0 ? `<div class="text-center py-16" style="color:var(--muted);"><i class="fas fa-folder-open text-4xl mb-4" style="opacity:0.3;"></i><p>No notes found matching your filters.</p></div>` : ''}
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+      ${filtered.map(n => `
+        <div class="card note-card cursor-pointer" onclick="openNoteDetail('${n.id}')">
+          <div class="flex gap-4">
+            <img src="${n.image}" class="rounded-lg flex-shrink-0" style="width:120px;height:90px;object-fit:cover;" alt="${n.title}">
+            <div class="flex-1 min-w-0">
+              <div class="flex items-start justify-between gap-2 mb-1">
+                <h3 class="font-semibold text-sm leading-tight" style="font-family:'Space Grotesk';">${n.title}</h3>
+                <span class="file-badge ${n.type}">${getFileLabel(n.type)}</span>
+              </div>
+              <p class="text-xs mb-2" style="color:var(--primary);">${n.subject}</p>
+              <p class="text-xs mb-2 line-clamp-2" style="color:var(--muted);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;">${n.desc}</p>
+              <div class="flex items-center justify-between">
+                <div class="flex items-center gap-2">
+                  <img src="${n.author.avatar}" class="avatar avatar-sm" style="width:22px;height:22px;" alt="${n.author.name}">
+                  <span class="text-xs" style="color:var(--muted);">${n.author.name}</span>
+                </div>
+                <div class="flex items-center gap-3 text-xs" style="color:var(--muted);">
+                  <span><i class="fas fa-download mr-1"></i>${n.downloads}</span>
+                  <span>${n.size}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      `).join('')}
+    </div>
+  </div>`;
+  return html;
+}
+
+function openNoteDetail(noteId) {
+  const n = notes.find(x => x.id === noteId);
+  if (!n) return;
+  const modal = document.getElementById('noteDetailModal');
+  const content = document.getElementById('noteDetailContent');
+  content.innerHTML = `
+    <div class="flex items-center justify-between mb-5">
+      <h2 class="text-lg font-bold" style="font-family:'Space Grotesk';">Note Details</h2>
+      <button class="btn-ghost" onclick="closeNoteDetail()" style="padding:6px 8px;"><i class="fas fa-xmark text-lg"></i></button>
+    </div>
+    <img src="${n.image}" class="w-full rounded-xl mb-4" style="height:200px;object-fit:cover;" alt="${n.title}">
+    <div class="flex items-center gap-2 mb-2">
+      <span class="file-badge ${n.type}"><i class="fas ${getFileIcon(n.type)}"></i> ${getFileLabel(n.type)}</span>
+      <span style="color:var(--muted);font-size:12px;">${n.size} · ${n.pages} pages</span>
+    </div>
+    <h3 class="text-xl font-bold mb-2" style="font-family:'Space Grotesk';">${n.title}</h3>
+    <p class="text-sm mb-1" style="color:var(--primary);font-weight:600;">${n.subject}</p>
+    <p class="text-sm mb-4" style="color:var(--muted);line-height:1.7;">${n.desc}</p>
+    <div class="flex items-center gap-3 mb-5 p-3 rounded-xl" style="background:var(--bg);">
+      <img src="${n.author.avatar}" class="avatar" alt="${n.author.name}">
+      <div class="flex-1">
+        <p class="font-semibold text-sm">${n.author.name}</p>
+        <p class="text-xs" style="color:var(--muted);">${n.author.branch} · ${n.author.year}</p>
+      </div>
+      ${!state.connectedUsers.has(n.author.id) && n.author.id !== 'u0' ?
+        `<button class="btn-outline connect-btn ${state.pendingConnections.has(n.author.id)?'sent':''}" onclick="toggleConnection('${n.author.id}',this)">
+          ${state.pendingConnections.has(n.author.id)?'<i class="fas fa-check mr-1"></i>Sent':'<i class="fas fa-user-plus mr-1"></i>Connect'}
+        </button>` : state.connectedUsers.has(n.author.id) ? `<span class="text-xs font-semibold" style="color:var(--primary);"><i class="fas fa-check-circle mr-1"></i>Connected</span>` : ''
+      }
+    </div>
+    <div class="flex gap-3">
+      <button class="btn-primary flex-1 flex items-center justify-center gap-2" onclick="showToast('Download started for: ${n.title.replace(/'/g,"\\'")}');closeNoteDetail();">
+        <i class="fas fa-download"></i> Download
+      </button>
+      <button class="btn-outline flex items-center gap-2" onclick="showToast('Note saved to your collection!','info');closeNoteDetail();">
+        <i class="fas fa-bookmark"></i> Save
+      </button>
+    </div>
+    <p class="text-xs text-center mt-4" style="color:var(--muted);">${n.downloads} downloads · Uploaded ${n.date}</p>
+  `;
+  modal.classList.add('show');
+}
+
+function closeNoteDetail() {
+  document.getElementById('noteDetailModal').classList.remove('show');
+}
+
+// ========================================
+// SENIORS VIEW
+// ========================================
+function renderSeniors() {
+  const seniors = users.filter(u => u.isSenior);
+  let html = `<div class="view-section">
+    <div class="mb-6">
+      <h1 class="text-2xl font-bold">Find Seniors</h1>
+      <p class="text-sm mt-1" style="color:var(--muted);">Connect with experienced students for guidance, mentorship, and placement tips</p>
+    </div>
+    <div class="grid gap-4">
+      ${seniors.map(s => {
+        const isConnected = state.connectedUsers.has(s.id);
+        const isPending = state.pendingConnections.has(s.id);
+        return `<div class="card">
+          <div class="flex items-start gap-4">
+            <div class="relative">
+              <img src="${s.avatar}" class="avatar avatar-lg" alt="${s.name}">
+              ${isConnected ? '<div class="online-dot" style="bottom:2px;right:2px;"></div>' : ''}
+            </div>
+            <div class="flex-1 min-w-0">
+              <div class="flex items-center gap-2 flex-wrap">
+                <h3 class="font-bold text-base">${s.name}</h3>
+                <span style="color:var(--primary);font-size:10px;font-weight:700;background:rgba(0,229,160,0.1);padding:2px 8px;border-radius:4px;">SENIOR</span>
+                ${isConnected ? '<span style="color:var(--primary);font-size:10px;font-weight:700;background:rgba(0,229,160,0.1);padding:2px 8px;border-radius:4px;"><i class="fas fa-check mr-1"></i>Connected</span>' : ''}
+              </div>
+              <p class="text-sm" style="color:var(--muted);">${s.branch} · ${s.year} · Batch ${s.batch}</p>
+              <p class="text-sm mt-1" style="color:#b8bdd0;">${s.bio}</p>
+              <div class="flex flex-wrap gap-1.5 mt-2">
+                ${s.skills.map(sk => `<span style="background:rgba(255,255,255,0.05);color:var(--muted);padding:3px 10px;border-radius:6px;font-size:11px;font-weight:500;">${sk}</span>`).join('')}
+              </div>
+              <div class="flex items-center gap-4 mt-3 text-xs" style="color:var(--muted);">
+                <span><i class="fas fa-user-group mr-1"></i>${s.connections} connections</span>
+                <span><i class="fas fa-file-lines mr-1"></i>${notes.filter(n=>n.author.id===s.id).length} notes shared</span>
+              </div>
+            </div>
+            <div class="flex flex-col gap-2 flex-shrink-0">
+              ${isConnected ?
+                `<button class="btn-outline connect-btn connected" style="font-size:12px;padding:6px 14px;"><i class="fas fa-message mr-1"></i>Message</button>` :
+                isPending ?
+                `<button class="btn-outline connect-btn sent" style="font-size:12px;padding:6px 14px;" onclick="event.stopPropagation();"><i class="fas fa-clock mr-1"></i>Pending</button>` :
+                `<button class="btn-primary connect-btn" style="font-size:12px;padding:8px 16px;" onclick="event.stopPropagation();toggleConnection('${s.id}',this);"><i class="fas fa-user-plus mr-1"></i>Connect</button>`
+              }
+            </div>
+          </div>
+        </div>`;
+      }).join('')}
+    </div>
+  </div>`;
+  return html;
+}
+
+// ========================================
+// MESSAGES VIEW
+// ========================================
+function renderMessages() {
+  if (state.activeChat) return renderChatView();
+
+  let html = `<div class="view-section">
+    <div class="mb-6">
+      <h1 class="text-2xl font-bold">Messages</h1>
+      <p class="text-sm mt-1" style="color:var(--muted);">Chat with your connections</p>
+    </div>
+    <div class="flex flex-col gap-2">
+      ${messages.map(m => `
+        <div class="card flex items-center gap-3 cursor-pointer" style="padding:14px 18px;" onclick="state.activeChat='${m.id}';renderMain();">
+          <div class="relative flex-shrink-0">
+            <img src="${m.user.avatar}" class="avatar" alt="${m.user.name}">
+            <div class="online-dot"></div>
+          </div>
+          <div class="flex-1 min-w-0">
+            <div class="flex items-center justify-between">
+              <span class="font-semibold text-sm">${m.user.name}</span>
+              <span class="text-xs" style="color:var(--muted);">${m.time}</span>
+            </div>
+            <p class="text-xs truncate mt-0.5" style="color:var(--muted);">${m.lastMsg}</p>
+          </div>
+          ${m.unread > 0 ? `<span style="background:var(--primary);color:var(--bg);font-size:11px;font-weight:700;width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;">${m.unread}</span>` : ''}
+        </div>
+      `).join('')}
+    </div>
+  </div>`;
+  return html;
+}
+
+function renderChatView() {
+  const chat = messages.find(m => m.id === state.activeChat);
+  if (!chat) return '<p>Chat not found</p>';
+  chat.unread = 0;
+
+  let html = `<div class="view-section" style="display:flex;flex-direction:column;height:calc(100vh - 48px);">
+    <!-- Chat Header -->
+    <div class="card flex items-center gap-3 mb-0" style="border-radius:14px 14px 0 0;border-bottom:1px solid var(--border);padding:14px 20px;flex-shrink:0;">
+      <button class="btn-ghost" style="padding:6px 8px;" onclick="state.activeChat=null;renderMain();"><i class="fas fa-arrow-left"></i></button>
+      <div class="relative">
+        <img src="${chat.user.avatar}" class="avatar" alt="${chat.user.name}">
+        <div class="online-dot"></div>
+      </div>
+      <div class="flex-1">
+        <p class="font-semibold text-sm">${chat.user.name}</p>
+        <p class="text-xs" style="color:var(--primary);">Online</p>
+      </div>
+      <button class="btn-ghost" style="padding:6px 8px;"><i class="fas fa-phone"></i></button>
+      <button class="btn-ghost" style="padding:6px 8px;"><i class="fas fa-video"></i></button>
+    </div>
+
+    <!-- Messages -->
+    <div class="flex-1 overflow-y-auto p-5" style="background:var(--bg);border-left:1px solid var(--border);border-right:1px solid var(--border);">
+      ${chat.messages.map(msg => `
+        <div class="flex ${msg.from === 'me' ? 'justify-end' : 'justify-start'} mb-3">
+          ${msg.from === 'them' ? `<img src="${chat.user.avatar}" class="avatar avatar-sm mr-2 flex-shrink-0" style="margin-top:4px;" alt="${chat.user.name}">` : ''}
+          <div class="max-w-xs lg:max-w-md">
+            <div class="px-4 py-2.5 rounded-2xl text-sm" style="${msg.from === 'me' ? 'background:var(--primary);color:var(--bg);border-bottom-right-radius:6px;' : 'background:var(--card);border:1px solid var(--border);border-bottom-left-radius:6px;'}">
+              ${msg.text}
+            </div>
+            <p class="text-xs mt-1 ${msg.from === 'me' ? 'text-right' : ''}" style="color:var(--muted);">${msg.time}</p>
+          </div>
+        </div>
+      `).join('')}
+    </div>
+
+    <!-- Input -->
+    <div class="card flex items-center gap-3" style="border-radius:0 0 14px 14px;border-top:1px solid var(--border);padding:14px 20px;flex-shrink:0;">
+      <button class="btn-ghost" style="padding:6px 8px;"><i class="fas fa-paperclip"></i></button>
+      <input type="text" id="chatInput" class="input-field" style="flex:1;" placeholder="Type a message..." onkeydown="if(event.key==='Enter'){sendChatMessage('${chat.id}');event.preventDefault();}">
+      <button class="btn-primary" style="padding:10px 16px;border-radius:10px;" onclick="sendChatMessage('${chat.id}')"><i class="fas fa-paper-plane"></i></button>
+    </div>
+  </div>`;
+  return html;
+}
+
+function sendChatMessage(chatId) {
+  const input = document.getElementById('chatInput');
+  const text = input.value.trim();
+  if (!text) return;
+  const chat = messages.find(m => m.id === chatId);
+  const now = new Date();
+  const timeStr = now.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
+  chat.messages.push({ from: 'me', text, time: timeStr });
+  chat.lastMsg = text;
+  chat.time = 'Just now';
+  renderMain();
+  // Scroll to bottom
+  setTimeout(() => {
+    const msgContainer = document.querySelector('.view-section .overflow-y-auto');
+    if (msgContainer) msgContainer.scrollTop = msgContainer.scrollHeight;
+  }, 50);
+}
+
+// ========================================
+// PROFILE VIEW
+// ========================================
+function renderProfile() {
+  let html = `<div class="view-section">
+    <!-- Profile Banner -->
+    <div class="card mb-4" style="padding:0;overflow:hidden;">
+      <div style="height:140px;background:linear-gradient(135deg,rgba(0,229,160,0.2),rgba(255,112,67,0.15));position:relative;">
+        <div style="position:absolute;inset:0;background:url('data:image/svg+xml,%3Csvg width=\\'60\\' height=\\'60\\' viewBox=\\'0 0 60 60\\' xmlns=\\'http://www.w3.org/2000/svg\\'%3E%3Cg fill=\\'none\\' fill-rule=\\'evenodd\\'%3E%3Cg fill=\\'%23ffffff\\' fill-opacity=\\'0.03\\'%3E%3Cpath d=\\'M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z\\'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E');"></div>
+      </div>
+      <div class="px-6 pb-5" style="margin-top:-45px;">
+        <div class="flex items-end gap-4 mb-4">
+          <img src="${currentUser.avatar}" class="avatar avatar-xl" style="border:4px solid var(--card);" alt="${currentUser.name}">
+          <div class="flex-1 pb-1">
+            <h1 class="text-xl font-bold" style="font-family:'Space Grotesk';">${currentUser.name}</h1>
+            <p class="text-sm" style="color:var(--muted);">${currentUser.branch} · ${currentUser.year} · Batch ${currentUser.batch}</p>
+          </div>
+          <button class="btn-outline" onclick="showToast('Profile editing coming soon!','info')"><i class="fas fa-pen mr-1"></i>Edit Profile</button>
+        </div>
+        <p class="text-sm" style="color:#b8bdd0;line-height:1.7;">${currentUser.bio}</p>
       </div>
     </div>
-  </div>
 
-  <script>
-    document.addEventListener('DOMContentLoaded', () => {
-      lucide.createIcons();
+    <!-- Stats -->
+    <div class="grid grid-cols-3 gap-4 mb-4">
+      <div class="card text-center" style="padding:16px;">
+        <p class="text-2xl font-bold" style="color:var(--primary);font-family:'Space Grotesk';">${currentUser.connections}</p>
+        <p class="text-xs mt-1" style="color:var(--muted);">Connections</p>
+      </div>
+      <div class="card text-center" style="padding:16px;">
+        <p class="text-2xl font-bold" style="color:var(--accent);font-family:'Space Grotesk';">${currentUser.posts}</p>
+        <p class="text-xs mt-1" style="color:var(--muted);">Posts</p>
+      </div>
+      <div class="card text-center" style="padding:16px;">
+        <p class="text-2xl font-bold" style="color:var(--warning);font-family:'Space Grotesk';">${currentUser.notesShared}</p>
+        <p class="text-xs mt-1" style="color:var(--muted);">Notes Shared</p>
+      </div>
+    </div>
 
-      const splashScreen = document.getElementById('splash-screen');
-      const carousel = document.getElementById('carousel');
-      const dots = document.querySelectorAll('.nav-dot');
-      const nextBtns = document.querySelectorAll('.next-btn');
+    <!-- Skills -->
+    <div class="card mb-4">
+      <h3 class="font-bold text-sm mb-3" style="font-family:'Space Grotesk';">Skills & Interests</h3>
+      <div class="flex flex-wrap gap-2">
+        ${currentUser.skills.map(s => `<span style="background:rgba(0,229,160,0.08);color:var(--primary);padding:6px 16px;border-radius:8px;font-size:13px;font-weight:500;border:1px solid rgba(0,229,160,0.15);">${s}</span>`).join('')}
+      </div>
+    </div>
 
-      // 1. Splash Screen Logic
-      setTimeout(() => {
-        splashScreen.classList.add('opacity-0', 'scale-[1.1]', 'pointer-events-none');
-        setTimeout(() => {
-          splashScreen.style.display = 'none';
-        }, 1000);
-      }, 3000);
+    <!-- Recent Activity -->
+    <div class="card">
+      <h3 class="font-bold text-sm mb-3" style="font-family:'Space Grotesk';">Your Recent Activity</h3>
+      <div class="flex flex-col gap-3">
+        <div class="flex items-center gap-3 p-3 rounded-xl" style="background:var(--bg);">
+          <div style="width:36px;height:36px;border-radius:8px;background:rgba(0,229,160,0.1);display:flex;align-items:center;justify-content:center;flex-shrink:0;"><i class="fas fa-heart" style="color:var(--accent);font-size:14px;"></i></div>
+          <div><p class="text-sm">You liked Arjun Mehta's post about Microsoft onboarding tips</p><p class="text-xs" style="color:var(--muted);">2 hours ago</p></div>
+        </div>
+        <div class="flex items-center gap-3 p-3 rounded-xl" style="background:var(--bg);">
+          <div style="width:36px;height:36px;border-radius:8px;background:rgba(0,229,160,0.1);display:flex;align-items:center;justify-content:center;flex-shrink:0;"><i class="fas fa-download" style="color:var(--primary);font-size:14px;"></i></div>
+          <div><p class="text-sm">You downloaded "SQL Practice Questions — 150 Queries"</p><p class="text-xs" style="color:var(--muted);">5 hours ago</p></div>
+        </div>
+        <div class="flex items-center gap-3 p-3 rounded-xl" style="background:var(--bg);">
+          <div style="width:36px;height:36px;border-radius:8px;background:rgba(0,229,160,0.1);display:flex;align-items:center;justify-content:center;flex-shrink:0;"><i class="fas fa-user-plus" style="color:var(--primary);font-size:14px;"></i></div>
+          <div><p class="text-sm">You connected with Sneha Patel</p><p class="text-xs" style="color:var(--muted);">1 day ago</p></div>
+        </div>
+      </div>
+    </div>
+  </div>`;
+  return html;
+}
 
-      // 2. Carousel Scroll Logic
-      carousel.addEventListener('scroll', () => {
-        const scrollPosition = carousel.scrollLeft;
-        const slideWidth = carousel.clientWidth;
-        const activeIndex = Math.round(scrollPosition / slideWidth);
+// ========================================
+// RIGHT SIDEBAR
+// ========================================
+function renderRightSidebar() {
+  const sidebar = document.getElementById('rightSidebar');
+  const unconnectedSeniors = users.filter(u => u.isSenior && !state.connectedUsers.has(u.id) && !state.pendingConnections.has(u.id));
 
-        dots.forEach((dot, index) => {
-          if (index === activeIndex) {
-            dot.classList.add('dot-active');
-          } else {
-            dot.classList.remove('dot-active');
-          }
-        });
-      });
+  let html = '';
+  // Search
+  html += `<div class="mb-6">
+    <div class="relative">
+      <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2" style="color:var(--muted);font-size:13px;"></i>
+      <input type="text" class="input-field" style="padding:9px 14px 9px 36px;font-size:13px;" placeholder="Search LibConnect...">
+    </div>
+  </div>`;
 
-      // 3. Next Button Logic
-      nextBtns.forEach((btn, index) => {
-        btn.addEventListener('click', () => {
-          const slideWidth = carousel.clientWidth;
-          carousel.scrollTo({
-            left: slideWidth * (index + 1),
-            behavior: 'smooth'
-          });
-        });
-      });
+  // Suggested Seniors
+  if (unconnectedSeniors.length > 0 && state.currentView !== 'seniors') {
+    html += `<div class="mb-6">
+      <h3 class="font-bold text-sm mb-3" style="font-family:'Space Grotesk';">Seniors to Connect</h3>
+      <div class="flex flex-col gap-3">
+        ${unconnectedSeniors.slice(0, 3).map(s => `
+          <div class="flex items-center gap-3">
+            <img src="${s.avatar}" class="avatar avatar-sm" alt="${s.name}">
+            <div class="flex-1 min-w-0">
+              <p class="text-xs font-semibold truncate">${s.name}</p>
+              <p class="text-xs truncate" style="color:var(--muted);">${s.branch} · ${s.year}</p>
+            </div>
+            <button class="btn-primary" style="padding:5px 12px;font-size:11px;border-radius:8px;" onclick="toggleConnection('${s.id}',this);renderRightSidebar();">
+              <i class="fas fa-plus" style="font-size:10px;"></i>
+            </button>
+          </div>
+        `).join('')}
+      </div>
+      <button class="btn-ghost w-full mt-2 text-xs" onclick="switchView('seniors')" style="color:var(--primary);">View all seniors <i class="fas fa-arrow-right ml-1"></i></button>
+    </div>`;
+  }
 
-      // 4. Subtle tilt effect on mouse move for images (desktop only)
-      if (window.innerWidth > 1024) {
-        document.querySelectorAll('.img-perspective').forEach(wrapper => {
-          const img = wrapper.querySelector('img');
-          wrapper.addEventListener('mousemove', (e) => {
-            const rect = wrapper.getBoundingClientRect();
-            const x = (e.clientX - rect.left) / rect.width - 0.5;
-            const y = (e.clientY - rect.top) / rect.height - 0.5;
-            img.style.transform = `rotateY(${x * 30}deg) rotateX(${y * -30}deg) scale(1.1)`;
-          });
-          wrapper.addEventListener('mouseleave', () => {
-            img.style.transform = '';
-          });
-        });
-      }
+  // Trending Subjects
+  if (state.currentView !== 'library') {
+    html += `<div class="mb-6">
+      <h3 class="font-bold text-sm mb-3" style="font-family:'Space Grotesk';">Trending in Library</h3>
+      <div class="flex flex-col gap-2">
+        ${['Data Structures & Algorithms', 'Machine Learning', 'Web Development', 'Database Management'].map((s, i) => `
+          <div class="flex items-center gap-3 p-2.5 rounded-lg cursor-pointer" style="background:var(--card);" onclick="state.selectedSubject='${s}';switchView('library');">
+            <span class="text-xs font-bold" style="color:var(--muted);width:18px;">${i + 1}</span>
+            <div class="flex-1">
+              <p class="text-xs font-semibold">${s}</p>
+              <p class="text-xs" style="color:var(--muted);">${notes.filter(n => n.subject === s).reduce((a, n) => a + n.downloads, 0)} downloads</p>
+            </div>
+            <i class="fas fa-arrow-trend-up text-xs" style="color:var(--primary);"></i>
+          </div>
+        `).join('')}
+      </div>
+    </div>`;
+  }
+
+  // Online Now
+  html += `<div class="mb-6">
+    <h3 class="font-bold text-sm mb-3" style="font-family:'Space Grotesk';">Online Now</h3>
+    <div class="flex flex-wrap gap-3">
+      ${users.slice(0, 6).map(u => `
+        <div class="relative cursor-pointer" title="${u.name}">
+          <img src="${u.avatar}" class="avatar avatar-sm" alt="${u.name}" style="width:38px;height:38px;">
+          <div class="online-dot" style="width:8px;height:8px;border-width:1.5px;"></div>
+        </div>
+      `).join('')}
+    </div>
+  </div>`;
+
+  // Upcoming Events
+  html += `<div>
+    <h3 class="font-bold text-sm mb-3" style="font-family:'Space Grotesk';">Upcoming Events</h3>
+    <div class="flex flex-col gap-2">
+      <div class="p-3 rounded-lg" style="background:var(--card);border-left:3px solid var(--primary);">
+        <p class="text-xs font-semibold">Placement Prep Workshop</p>
+        <p class="text-xs" style="color:var(--muted);">Tomorrow · 3:00 PM · Seminar Hall</p>
+      </div>
+      <div class="p-3 rounded-lg" style="background:var(--card);border-left:3px solid var(--accent);">
+        <p class="text-xs font-semibold">Hackathon Registration Deadline</p>
+        <p class="text-xs" style="color:var(--muted);">Friday · 11:59 PM · Online</p>
+      </div>
+      <div class="p-3 rounded-lg" style="background:var(--card);border-left:3px solid var(--warning);">
+        <p class="text-xs font-semibold">ML Club Weekly Meetup</p>
+        <p class="text-xs" style="color:var(--muted);">Saturday · 10:00 AM · Lab 304</p>
+      </div>
+    </div>
+  </div>`;
+
+  sidebar.innerHTML = html;
+}
+
+// ========================================
+// CONNECTION TOGGLE
+// ========================================
+function toggleConnection(userId, btnEl) {
+  if (state.connectedUsers.has(userId)) {
+    state.connectedUsers.delete(userId);
+    showToast('Connection removed', 'info');
+  } else if (state.pendingConnections.has(userId)) {
+    state.pendingConnections.delete(userId);
+    state.connectedUsers.add(userId);
+    showToast('Connection accepted!');
+  } else {
+    state.pendingConnections.add(userId);
+    showToast('Connection request sent!');
+  }
+  renderMain();
+  renderRightSidebar();
+}
+
+// ========================================
+// UPLOAD MODAL
+// ========================================
+function openUploadModal() {
+  const modal = document.getElementById('uploadModal');
+  const content = document.getElementById('uploadModalContent');
+  state.uploadedFiles = [];
+
+  content.innerHTML = `
+    <div class="flex items-center justify-between mb-5">
+      <h2 class="text-lg font-bold" style="font-family:'Space Grotesk';">Upload Resource</h2>
+      <button class="btn-ghost" onclick="closeUploadModal()" style="padding:6px 8px;"><i class="fas fa-xmark text-lg"></i></button>
+    </div>
+
+    <!-- Upload Zone -->
+    <div class="upload-zone mb-4" id="uploadZone" onclick="document.getElementById('fileInput').click();">
+      <input type="file" id="fileInput" multiple hidden onchange="handleFileSelect(this.files)">
+      <i class="fas fa-cloud-arrow-up text-3xl mb-3" style="color:var(--primary);opacity:0.7;"></i>
+      <p class="text-sm font-semibold mb-1">Drag and drop files here</p>
+      <p class="text-xs" style="color:var(--muted);">or click to browse — supports images, PDF, DOC, PPT, ZIP</p>
+    </div>
+
+    <!-- Selected Files -->
+    <div id="selectedFilesList" class="flex flex-col gap-2 mb-4" style="display:none;"></div>
+
+    <!-- Title -->
+    <div class="mb-3">
+      <label class="text-xs font-semibold mb-1.5 block" style="color:var(--muted);">Title</label>
+      <input type="text" id="uploadTitle" class="input-field" placeholder="e.g., Complete DSA Notes — Semester 3">
+    </div>
+
+    <!-- Subject -->
+    <div class="mb-3">
+      <label class="text-xs font-semibold mb-1.5 block" style="color:var(--muted);">Subject</label>
+      <select id="uploadSubject" class="input-field">
+        <option value="">Select a subject</option>
+        ${subjects.map(s => `<option value="${s}">${s}</option>`).join('')}
+      </select>
+    </div>
+
+    <!-- Description -->
+    <div class="mb-4">
+      <label class="text-xs font-semibold mb-1.5 block" style="color:var(--muted);">Description</label>
+      <textarea id="uploadDesc" class="input-field" placeholder="Briefly describe what's in these notes..." rows="3"></textarea>
+    </div>
+
+    <!-- Post to Feed Toggle -->
+    <label class="flex items-center gap-3 mb-5 cursor-pointer">
+      <div class="relative">
+        <input type="checkbox" id="postToFeed" checked class="sr-only">
+        <div class="toggle-bg" style="width:44px;height:24px;border-radius:12px;background:var(--border);transition:background 0.2s;cursor:pointer;" onclick="this.previousElementSibling.checked=!this.previousElementSibling.checked;this.style.background=this.previousElementSibling.checked?'var(--primary)':'var(--border)';"></div>
+        <div class="toggle-dot" style="width:18px;height:18px;border-radius:50%;background:white;position:absolute;top:3px;left:3px;transition:transform 0.2s;pointer-events:none;"></div>
+      </div>
+      <span class="text-sm">Also share as a post on feed</span>
+    </label>
+
+    <!-- Upload Button -->
+    <button class="btn-primary w-full flex items-center justify-center gap-2" style="padding:12px;" onclick="handleUpload()">
+      <i class="fas fa-cloud-arrow-up"></i> Upload Resource
+    </button>
+  `;
+
+  // Fix toggle dot position
+  const checkbox = content.querySelector('#postToFeed');
+  const toggleDot = content.querySelector('.toggle-dot');
+  checkbox.addEventListener('change', () => {
+    toggleDot.style.transform = checkbox.checked ? 'translateX(20px)' : 'translateX(0)';
+  });
+  toggleDot.style.transform = 'translateX(20px)';
+
+  // Drag and drop
+  const zone = content.querySelector('#uploadZone');
+  zone.addEventListener('dragover', (e) => { e.preventDefault(); zone.classList.add('dragover'); });
+  zone.addEventListener('dragleave', () => zone.classList.remove('dragover'));
+  zone.addEventListener('drop', (e) => { e.preventDefault(); zone.classList.remove('dragover'); handleFileSelect(e.dataTransfer.files); });
+
+  modal.classList.add('show');
+}
+
+function closeUploadModal() {
+  document.getElementById('uploadModal').classList.remove('show');
+}
+
+function handleFileSelect(files) {
+  if (!files || files.length === 0) return;
+  state.uploadedFiles = Array.from(files);
+  const list = document.getElementById('selectedFilesList');
+  list.style.display = 'flex';
+
+  list.innerHTML = state.uploadedFiles.map((f, i) => {
+    let type = 'doc';
+    if (f.type.includes('pdf')) type = 'pdf';
+    else if (f.type.startsWith('image/')) type = 'img';
+    else if (f.type.includes('presentation') || f.name.endsWith('.pptx') || f.name.endsWith('.ppt')) type = 'ppt';
+    else if (f.name.endsWith('.zip') || f.name.endsWith('.rar')) type = 'zip';
+
+    const sizeStr = f.size > 1048576 ? (f.size / 1048576).toFixed(1) + ' MB' : (f.size / 1024).toFixed(0) + ' KB';
+    return `<div class="flex items-center gap-3 p-3 rounded-xl" style="background:var(--bg);">
+      <div style="width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:rgba(0,229,160,0.08);">
+        <i class="fas ${getFileIcon(type)}" style="color:var(--primary);"></i>
+      </div>
+      <div class="flex-1 min-w-0">
+        <p class="text-sm font-medium truncate">${f.name}</p>
+        <div class="flex items-center gap-2">
+          <span class="file-badge ${type}" style="font-size:9px;padding:1px 6px;">${getFileLabel(type)}</span>
+          <span class="text-xs" style="color:var(--muted);">${sizeStr}</span>
+        </div>
+      </div>
+      <button class="btn-ghost" style="padding:4px 6px;" onclick="removeFile(${i})"><i class="fas fa-xmark"></i></button>
+    </div>`;
+  }).join('');
+}
+
+function removeFile(index) {
+  state.uploadedFiles.splice(index, 1);
+  if (state.uploadedFiles.length === 0) {
+    document.getElementById('selectedFilesList').style.display = 'none';
+  } else {
+    handleFileSelect(state.uploadedFiles);
+  }
+}
+
+function handleUpload() {
+  const title = document.getElementById('uploadTitle').value.trim();
+  const subject = document.getElementById('uploadSubject').value;
+  const desc = document.getElementById('uploadDesc').value.trim();
+  const postToFeed = document.getElementById('postToFeed').checked;
+
+  // Validation
+  if (state.uploadedFiles.length === 0) { showToast('Please select at least one file', 'error'); return; }
+  if (!title) { showToast('Please enter a title', 'error'); return; }
+  if (!subject) { showToast('Please select a subject', 'error'); return; }
+  if (!desc) { showToast('Please add a description', 'error'); return; }
+
+  // Determine file type from first file
+  const firstFile = state.uploadedFiles[0];
+  let type = 'doc';
+  if (firstFile.type.includes('pdf')) type = 'pdf';
+  else if (firstFile.type.startsWith('image/')) type = 'img';
+  else if (firstFile.type.includes('presentation') || firstFile.name.endsWith('.pptx')) type = 'ppt';
+  else if (firstFile.name.endsWith('.zip')) type = 'zip';
+
+  const totalSize = state.uploadedFiles.reduce((a, f) => a + f.size, 0);
+  const sizeStr = totalSize > 1048576 ? (totalSize / 1048576).toFixed(1) + ' MB' : (totalSize / 1024).toFixed(0) + ' KB';
+
+  // Add to notes library
+  const newNote = {
+    id: 'n' + (notes.length + 1),
+    title, subject, author: currentUser, type, size: sizeStr,
+    downloads: 0, date: 'Just now', desc,
+    pages: state.uploadedFiles.length > 1 ? state.uploadedFiles.length + ' files' : '—',
+    image: type === 'img' ? URL.createObjectURL(firstFile) : `https://picsum.photos/seed/upload${Date.now()}/400/250.jpg`
+  };
+  notes.unshift(newNote);
+
+  // Post to feed if checked
+  if (postToFeed) {
+    posts.unshift({
+      id: 'p' + (posts.length + 1),
+      author: currentUser, time: 'Just now',
+      content: `Uploaded new notes: "${title}" under ${subject}.\n\n${desc}`,
+      image: type === 'img' ? URL.createObjectURL(firstFile) : null,
+      likes: 0, comments: [], isLiked: false
     });
-  </script>
+  }
+
+  closeUploadModal();
+  showToast(`Successfully uploaded "${title}" to Notes Library!`);
+
+  // Refresh current view
+  renderMain();
+  renderRightSidebar();
+}
+
+// ========================================
+// MODAL OVERLAY CLICK-TO-CLOSE
+// ========================================
+document.getElementById('uploadModal').addEventListener('click', function(e) {
+  if (e.target === this) closeUploadModal();
+});
+document.getElementById('noteDetailModal').addEventListener('click', function(e) {
+  if (e.target === this) closeNoteDetail();
+});
+
+// ========================================
+// KEYBOARD SHORTCUTS
+// ========================================
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') {
+    closeUploadModal();
+    closeNoteDetail();
+  }
+});
+
+// ========================================
+// INIT
+// ========================================
+function init() {
+  renderMain();
+  renderRightSidebar();
+}
+init();
+</script>
 </body>
 </html>
